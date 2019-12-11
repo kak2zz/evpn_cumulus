@@ -1,6 +1,6 @@
 
 # EVPN with Cumulus Linux
-![network scheme](https://ghe.cloud.croc.ru/dc-support/EVPN-with-Cumulus-VX/blob/master/EVPN.PNG)
+![network scheme](https://github.com/kak2zz/evpn_cumulus/blob/master/EVPN.PNG)
 
 ### Как пользоваться:
 
