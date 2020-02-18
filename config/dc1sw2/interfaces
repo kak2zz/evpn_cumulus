@@ -43,11 +43,12 @@ iface swp7
 
 auto bridge
 iface bridge
-    hwaddress ether 08:00:00:00:00:02
-    bridge-ports peerlink vxlan100100 server01 vxlan111
-    bridge-vlan-aware yes
-    bridge-vids 100 111 10 20
+    #hwaddress ether 08:00:00:00:00:02
+    bridge-ports peerlink vxlan100100 server01
     bridge-stp off
+    bridge-vids 100
+    bridge-vlan-aware yes
+    bridge-vlan-protocol 802.1ad
 
 auto server01
 iface server01
@@ -55,63 +56,28 @@ iface server01
   bond-lacp-bypass-allow yes
   alias server01 MLAG bond
   bond-slaves swp7
+  bridge-access 100
   clag-id 1
 
-auto client1
-iface client1
-  vrf-table auto
-
-auto vlan10
-iface vlan10
-    address 10.0.0.2/24
-    address-virtual 44:38:39:FF:10:02 10.0.0.1/24
-    vlan-id 10
-    vlan-raw-device bridge
-    vrf client1
-
-
-auto client2
-iface client2
-  vrf-table auto
-
-auto vlan20
-iface vlan20
-    address 10.0.0.2/24
-    address-virtual 44:38:39:FF:20:02 10.0.0.1/24
-    vlan-id 20
-    vlan-raw-device bridge
-    vrf client2
 
 auto ospf
 iface ospf
   vrf-table auto
+
+auto vlan100
+iface vlan100
+    vlan-id 100
+    vlan-protocol 802.1ad
+    vlan-raw-device bridge
+
 
 auto vlan111
 iface vlan111
     mtu 1500
     address 100.100.100.2/24
     vlan-id 111
-    vlan-raw-device bridge
+    vlan-raw-device vlan100
     vrf ospf
-
-
-## QinQ Test with no vlan-aware bridge
-
-auto server01.1000
-iface server01.1000
-     vlan_protocol 802.1q
-
-auto qinq
-iface qinq
-    bridge-ports server01.1000 vni1000
-    bridge-vlan-aware no
-
-auto vni1000
-iface vni1000
-    vxlan-local-tunnelip 10.0.0.12
-    vxlan-id 1000
-
-
 
 auto peerlink
 iface peerlink
@@ -126,7 +92,7 @@ iface peerlink.4094
   clagd-peer-ip 169.254.1.1
   clagd-backup-ip 192.168.200.11
   clagd-sys-mac 44:38:39:FF:40:94
-
+  bridge-vlan-protocol 802.1ad
 
 auto vxlan100100
 iface vxlan100100
@@ -138,12 +104,27 @@ iface vxlan100100
     bridge-learning off
 
 
-
-auto vxlan111
-iface vxlan111
+#New internet
+auto swp8
+iface swp8
   mtu 9216
-    vxlan-id 111
-    bridge-arp-nd-suppress on
-    vxlan-local-tunnelip 10.0.0.12
-    bridge-access 111
-    bridge-learning off
+
+auto client1
+iface client1
+  vrf-table auto
+
+auto client2
+iface client2
+  vrf-table auto
+
+auto swp8.10
+iface swp8.10
+    address 10.0.0.3/24
+    vrrp 10 10.0.0.1/24
+    vrf client1
+
+auto swp8.20
+iface swp8.20
+    address 10.0.0.3/24
+    vrrp 11 10.0.0.1/24
+    vrf client2

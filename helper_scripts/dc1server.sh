@@ -4,27 +4,6 @@ echo "#################################"
 echo "  Configure namespaces.."
 echo "#################################"
 
-#internet test client 1
-ip netns add internet_client_1
-vconfig add bond0 10
-ip link set dev bond0.10 netns internet_client_1
-ip netns exec internet_client_1 ip link set bond0.10 address 02:ac:10:ff:00:11
-ip netns exec internet_client_1 ip link set bond0.10 up
-ip netns exec internet_client_1 ip link set bond0.10 mtu 1500
-ip netns exec internet_client_1 ip addr add 10.0.0.10/24 dev bond0.10
-ip netns exec internet_client_1 ip ro add 0.0.0.0/0 via 10.0.0.1
-
-
-#internet test client 2
-ip netns add internet_client_2
-vconfig add bond0 20
-ip link set dev bond0.20 netns internet_client_2
-ip netns exec internet_client_2 ip link set bond0.20 address 02:ac:10:ff:00:12
-ip netns exec internet_client_2 ip link set bond0.20 up
-ip netns exec internet_client_2 ip link set bond0.20 mtu 1500
-ip netns exec internet_client_2 ip addr add 10.0.0.20/24 dev bond0.20
-ip netns exec internet_client_2 ip ro add 0.0.0.0/0 via 10.0.0.1
-
 
 #vlan test over vxlan with vlan-aware bridge
 ip netns add vlan_test

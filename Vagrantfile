@@ -78,18 +78,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE dc1sw1 #####
     config.vm.define "dc1sw1" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-  	  config.vm.box_version = "3.7"
+  	  config.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc1sw1"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.14'
+      #device.ssh.host = '172.16.5.14'
     
       # NETWORK INTERFACES
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11114", :adapter => 1, auto_config: false, ip: "172.16.5.14"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11114", :adapter => 1, auto_config: false, ip: "172.16.5.14"
 
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "1", auto_config: false , :mac => "aaaaaaaa1101"
@@ -105,6 +105,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       device.vm.network "private_network", virtualbox__intnet: "20", auto_config: false , :mac => "aaaaaaaa1106"
   	  #swp7
       device.vm.network "private_network", virtualbox__intnet: "13", auto_config: false , :mac => "aaaaaaaa1107"
+      #swp8
+      device.vm.network "private_network", virtualbox__intnet: "internet1", auto_config: false , :mac => "aaaaaabb1107"
+
 
       device.vm.provider "virtualbox" do |vbox|
         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -114,6 +117,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
         vbox.customize ['modifyvm', :id, '--nicpromisc8', 'allow-all']
+        vbox.customize ['modifyvm', :id, '--nicpromisc9', 'allow-all']
         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
       end
 
@@ -158,6 +162,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   echo "  INFO: Adding UDEV Rule: aa:aa:aa:aa:11:07 --> swp7"
   echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:aa:aa:aa:11:07", NAME="swp7", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
   udev_rule
+      device.vm.provision :shell , :inline => <<-udev_rule
+  echo "  INFO: Adding UDEV Rule: aa:aa:aa:bb:11:07 --> swp8"
+  echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:aa:aa:bb:11:07", NAME="swp8", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
+  udev_rule
 
 
 
@@ -170,17 +178,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE dc1sw2 #####
     config.vm.define "dc1sw2" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc1sw2"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.15'
+      #device.ssh.host = '172.16.5.15'
 
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11115", :adapter => 1, auto_config: false, ip: "172.16.5.15"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11115", :adapter => 1, auto_config: false, ip: "172.16.5.15"
 
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "3", auto_config: false , :mac => "aaaaaaaa1201"
@@ -196,6 +204,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       device.vm.network "private_network", virtualbox__intnet: "20", auto_config: false , :mac => "aaaaaaaa1206"
   	  #swp7
       device.vm.network "private_network", virtualbox__intnet: "14", auto_config: false , :mac => "aaaaaaaa1207"
+      #swp8
+      device.vm.network "private_network", virtualbox__intnet: "internet2", auto_config: false , :mac => "aaaaaabb1207"
       
       device.vm.provider "virtualbox" do |vbox|
         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -205,6 +215,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
         vbox.customize ['modifyvm', :id, '--nicpromisc8', 'allow-all']
+        vbox.customize ['modifyvm', :id, '--nicpromisc9', 'allow-all']
         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
       end
 
@@ -248,6 +259,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   echo "  INFO: Adding UDEV Rule: aa:aa:aa:aa:12:07 --> swp7"
   echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:aa:aa:aa:12:07", NAME="swp7", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
   udev_rule
+        device.vm.provision :shell , :inline => <<-udev_rule
+  echo "  INFO: Adding UDEV Rule: aa:aa:aa:bb:12:07 --> swp8"
+  echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:aa:aa:bb:12:07", NAME="swp8", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
+  udev_rule
 
       device.vm.provision :shell , :inline => $script
 
@@ -260,18 +275,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE dc2sw1 #####
     config.vm.define "dc2sw1" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc2sw1"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.16'
+      #device.ssh.host = '172.16.5.16'
     
       # NETWORK INTERFACES
 
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11116", :adapter => 1, auto_config: false, ip: "172.16.5.16"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11116", :adapter => 1, auto_config: false, ip: "172.16.5.16"
 
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "1", auto_config: false , :mac => "aaaaaaaa2101"
@@ -356,17 +371,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    ##### DEFINE dc2sw2 #####
     config.vm.define "dc2sw2" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc2sw2"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.17'
+      #device.ssh.host = '172.16.5.17'
     
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11117", :adapter => 1, auto_config: false, ip: "172.16.5.17"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11117", :adapter => 1, auto_config: false, ip: "172.16.5.17"
 
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "2", auto_config: false , :mac => "aaaaaaaa2201"
@@ -447,17 +462,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    ##### DEFINE dc3sw1 #####
     config.vm.define "dc3sw1" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc3sw1"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.18'
+      #device.ssh.host = '172.16.5.18'
     
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11118", :adapter => 1, auto_config: false, ip: "172.16.5.18"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11118", :adapter => 1, auto_config: false, ip: "172.16.5.18"
 
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "7", auto_config: false , :mac => "aaaaaaaa3101"
@@ -539,17 +554,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    ##### DEFINE dc3sw2 #####
     config.vm.define "dc3sw2" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc3sw2"
         v.memory = 512
       end
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.19'
+      #device.ssh.host = '172.16.5.19'
     
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11119", :adapter => 1, auto_config: false, ip: "172.16.5.19"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11119", :adapter => 1, auto_config: false, ip: "172.16.5.19"
  
   	  #swp1
       device.vm.network "private_network", virtualbox__intnet: "8", auto_config: false , :mac => "aaaaaaaa3201"
@@ -633,31 +648,37 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE VM for dc1server #####
     config.vm.define "dc1server" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc1server"
         v.memory = 512
       end
 
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.11'
+      #device.ssh.host = '172.16.5.11'
 
 
       # NETWORK INTERFACES
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11111", :adapter => 1, auto_config: false, ip: "172.16.5.11"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11111", :adapter => 1, auto_config: false, ip: "172.16.5.11"
 
         #eth1
         device.vm.network "private_network", virtualbox__intnet: "13", auto_config: false , :mac => "aaaaaaaa0101"
 
         #eth2
         device.vm.network "private_network", virtualbox__intnet: "14", auto_config: false , :mac => "aaaaaaaa0102"
+        #eth3
+        device.vm.network "private_network", virtualbox__intnet: "internet1", auto_config: false , :mac => "aaaaaabb0101"
+        #eth4
+        device.vm.network "private_network", virtualbox__intnet: "internet2", auto_config: false , :mac => "aaaaaabb0102"
 
 
       device.vm.provider "virtualbox" do |vbox|
         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+        vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+        vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
       end
 
@@ -681,6 +702,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   echo "  INFO: Adding UDEV Rule: aa:aa:aa:aa:01:02 --> eth2"
   echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="4aa:aa:aa:aa:01:02", NAME="eth2", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
   udev_rule
+       device.vm.provision :shell , :inline => <<-udev_rule
+  echo "  INFO: Adding UDEV Rule: aa:aa:aa:bb:01:01 --> eth3"
+  echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="aa:aa:aa:bb:01:01", NAME="eth3", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
+  udev_rule
+       device.vm.provision :shell , :inline => <<-udev_rule
+  echo "  INFO: Adding UDEV Rule: aa:aa:aa:bb:01:02 --> eth4"
+  echo 'ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="4aa:aa:aa:bb:01:02", NAME="eth4", SUBSYSTEMS=="pci"' >> /etc/udev/rules.d/70-persistent-net.rules
+  udev_rule
 
 
       device.vm.provision :shell , :inline => $script
@@ -693,20 +722,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE VM for dc2server #####
     config.vm.define "dc2server" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc2server"
         v.memory = 512
       end
 
       device.vm.synced_folder ".", "/vagrant", disabled: true
-      device.ssh.host = '172.16.5.12'
+      #device.ssh.host = '172.16.5.12'
 
 
       # NETWORK INTERFACES
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11112", :adapter => 1, auto_config: false, ip: "172.16.5.12"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11112", :adapter => 1, auto_config: false, ip: "172.16.5.12"
 
       #eth1
       device.vm.network "private_network", virtualbox__intnet: "15", auto_config: false , :mac => "aaaaaaaa0201"
@@ -760,20 +789,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ##### DEFINE VM for dc3server #####
     config.vm.define "dc3server" do |device|
       device.vm.box = "CumulusCommunity/cumulus-vx"
-      device.vm.box_version = "3.7"
+      device.vm.box_version = "3.7.11"
       device.vm.provider "virtualbox" do |v|
         v.name = "dc3server"
         v.memory = 512
       end
 
       device.vm.synced_folder ".", "/vagrant", disabled: true
-        device.ssh.host = '172.16.5.13'
+      #device.ssh.host = '172.16.5.13'
 
 
       # NETWORK INTERFACES
       # NETWORK INTERFACES
       #manage interface
-      device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11113", :adapter => 1, auto_config: false, ip: "172.16.5.13"
+      #device.vm.network "private_network", :name => 'vboxnet0', :mac => "aaaaaaa11113", :adapter => 1, auto_config: false, ip: "172.16.5.13"
  
       #eth1
       device.vm.network "private_network", virtualbox__intnet: "17", auto_config: false , :mac => "aaaaaaaa0301"

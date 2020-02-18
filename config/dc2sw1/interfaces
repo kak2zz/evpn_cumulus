@@ -48,26 +48,8 @@ iface server02
   bond-lacp-bypass-allow yes
   alias server02 MLAG bond
   bond-slaves swp7
+  bridge-access 100
   clag-id 1
-
-
-## QinQ Test with no vlan-aware bridge
-
-auto server02.1000
-iface server02.1000
-    vlan_protocol 802.1q
-
-auto qinq
-iface qinq
-    bridge-ports server02.1000 vni1000
-    bridge-vlan-aware no
-
-auto vni1000
-iface vni1000
-    vxlan-local-tunnelip 10.0.0.13
-    vxlan-id 1000
-
-
 
 auto peerlink
 iface peerlink
@@ -82,13 +64,15 @@ iface peerlink.4094
   clagd-peer-ip 169.254.1.2
   clagd-backup-ip 192.168.200.14
   clagd-sys-mac 44:38:39:FF:41:94
+  bridge-vlan-protocol 802.1ad
 
 auto bridge
 iface bridge
     hwaddress ether 08:00:00:00:00:03
-    bridge-ports peerlink vxlan100100 server02 vxlan111
+    bridge-ports peerlink vxlan100100 server02
     bridge-vlan-aware yes
-    bridge-vids 100 111
+    bridge-vids 100
+    bridge-vlan-protocol 802.1ad
     bridge-stp off
 
 
@@ -99,13 +83,4 @@ iface vxlan100100
     bridge-arp-nd-suppress on
     vxlan-local-tunnelip 10.0.0.13
     bridge-access 100
-    bridge-learning off
-
-auto vxlan111
-iface vxlan111
-  mtu 9216
-    vxlan-id 111
-    bridge-arp-nd-suppress on
-    vxlan-local-tunnelip 10.0.0.13
-    bridge-access 111
     bridge-learning off

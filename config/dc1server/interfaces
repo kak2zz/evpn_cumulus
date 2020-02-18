@@ -18,3 +18,37 @@ auto bond0
 iface bond0
   mtu 9000
   bond-slaves eth1 eth2
+
+
+
+auto bridge
+iface bridge
+    bridge-ports eth3 eth4
+    bridge-vids 10 20
+    bridge-vlan-aware yes
+
+
+auto client1
+iface client1
+  vrf-table auto
+
+auto vlan10
+iface vlan10
+    address 10.0.0.10/24
+    gateway 10.0.0.1
+    vlan-id 10
+    vlan-raw-device bridge
+    vrf client1
+
+
+auto client2
+iface client2
+  vrf-table auto
+
+auto vlan20
+iface vlan20
+    address 10.0.0.20/24
+    gateway 10.0.0.1
+    vlan-id 20
+    vlan-raw-device bridge
+    vrf client2
