@@ -47,7 +47,6 @@ iface server03
   bond-lacp-bypass-allow yes
   alias server03 MLAG bond
   bond-slaves swp7
-  bridge-access 100
   clag-id 1
 
 

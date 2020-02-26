@@ -43,9 +43,10 @@ iface swp7
 
 auto bridge
 iface bridge
-    bridge-ports peerlink vxlan100100 server01
+    bridge-ports peerlink vxlan100100 vxlan101000 server01
     bridge-stp off
     bridge-vids 100
+    bridge-pvid 1000
     bridge-vlan-aware yes
     bridge-vlan-protocol 802.1ad
 
@@ -56,7 +57,6 @@ iface server01
   bond-lacp-bypass-allow yes
   alias server01 MLAG bond
   bond-slaves swp7
-  bridge-access 100
   clag-id 1
 
 
@@ -64,9 +64,9 @@ auto ospf
 iface ospf
   vrf-table auto
 
-auto vlan100
-iface vlan100
-    vlan-id 100
+auto vlan1000
+iface vlan1000
+    vlan-id 1000
     vlan-protocol 802.1ad
     vlan-raw-device bridge
 
@@ -75,7 +75,7 @@ iface vlan111
     mtu 1500
     address 100.100.100.1/24
     vlan-id 111
-    vlan-raw-device vlan100
+    vlan-raw-device vlan1000
     vrf ospf
 
 auto peerlink
@@ -101,6 +101,16 @@ iface vxlan100100
     vxlan-local-tunnelip 10.0.0.11
     bridge-access 100
     bridge-learning off
+
+auto vxlan101000
+iface vxlan101000
+  mtu 9216
+    vxlan-id 101000
+    bridge-arp-nd-suppress on
+    vxlan-local-tunnelip 10.0.0.11
+    bridge-access 1000
+    bridge-learning off
+
 
 #New internet
 auto swp8
